@@ -7,10 +7,10 @@ class Character {
 		bool IsUnicode();
 		
 		void SetChar(char32_t code);
-		void GetChar(char32_t& code);
+		char32_t GetChar();
 		
 		void SetFont(std::string name);
-		void GetFont(std::string& name);
+		std::string GetFont();
 		
 		void SetColor(char r, char g, char b, char a);
 		void SetColor(char r, char g, char b);

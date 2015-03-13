@@ -105,10 +105,10 @@ void TextBuffer::SetCharacter(const unsigned int x, const unsigned int y, Charac
 		return;
 	buffer[x][y] = ch;
 }
-void TextBuffer::GetCharacter(const unsigned int x, const unsigned int y, Character& ch) {
-	if (x < 1 || y < 1)
+Character& TextBuffer::GetCharacter(const unsigned int x, const unsigned int y) {
+	if (x < 1 || y < 1 || x >= columns || y >= rows)
 		return;
-	ch = buffer[x][y];
+	return buffer[x][y];
 }
 
 // Private methods
@@ -117,7 +117,7 @@ void TextBuffer::GetLines(const std::u32string str, const std::u32string delimit
 	size_t position = 0;
 	size_t positionPrev = 0;
 	while((position = str.find((char)delimiter, positionPrev)) >= 0) {
-		std:u32string newLine = str.substr(positionPrev, position);
+		std::u32string newLine = str.substr(positionPrev, position);
 		if (newLine.length() > longestLine)
 			longestLine = newLine.length();
 		lines.push_back(newLine);

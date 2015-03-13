@@ -16,15 +16,15 @@ bool Character::IsUnicode() {
 void Character::SetChar(char32_t code) {
 	codePoint = code;
 }
-void Character::GetChar(char32_t& code) {
-	code = codePoint;
+char32_t Character::GetChar() {
+	return codePoint;
 }
 
 void Character::SetFont(std::string name) {
 	fontName = name;
 }
-void Character::GetFont(std::string& name) {
-	name = fontName;
+std::string Character::GetFont() {
+	return fontName;
 }
 
 void Character::SetColor(char r, char g, char b, char a) {
