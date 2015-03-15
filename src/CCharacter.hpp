@@ -1,3 +1,8 @@
+#ifndef INC_TextEngine_Character
+#define INC_TextEngine_Character
+
+#include "NEngine.hpp"
+
 class Character {
 	public:
 		Character();
@@ -24,3 +29,4 @@ class Character {
 		char bgColor[4];
 		std::string fontName;
 };
+#endif

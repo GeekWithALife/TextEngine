@@ -1,8 +1,9 @@
+#include "CCanvas.hpp"
 
-void Canvas::Canvas() {
+Canvas::Canvas() {
 	bufferID = 0;
 }
-void Canvas::~Canvas() {}
+Canvas::~Canvas() {}
 
 void Canvas::SetSize(const unsigned int width, const unsigned int height) {
 	buffers[0].SetSize(width, height);
@@ -37,10 +38,11 @@ void Canvas::Swap() {
 			bufferID = 0;
 			break;
 		default:
+			break;
 	}
 }
 
-TextBuffer& Canvas::GetBuffer() {
+TextBuffer Canvas::GetBuffer() {
 	return buffers[bufferID];
 }
 

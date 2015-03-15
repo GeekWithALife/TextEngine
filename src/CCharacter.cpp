@@ -1,16 +1,18 @@
-void Character::Character() {
-	SetCharCode(0);
+#include "CCharacter.hpp"
+
+Character::Character() {
+	SetChar(0);
 }
-void Character::Character(char32_t code) {
-	SetCharCode(code);
+Character::Character(char32_t code) {
+	SetChar(code);
 }
 
-void Character::~Character() {
+Character::~Character() {
 	
 }
 
 bool Character::IsUnicode() {
-	return code > 127;
+	return codePoint > 127;
 }
 
 void Character::SetChar(char32_t code) {

@@ -1,19 +1,13 @@
+#ifndef INC_TextEngine_Game
+#define INC_TextEngine_Game
+
+#include "NEngine.hpp"
+#include "CCanvas.hpp"
+
 class Game {
 	public:
 		Game();
-		~Game();
-		
-		// Properties
-		//void SetTitle(std::u32string title);
-		//void SetResolution(unsigned int width, unsigned int height);
-		
-		// Runtime Management
-		void Initialize(std::string title, unsigned int scrWidth, unsigned int scrHeight);
-		void Start();
-		void Terminate();
-		void Render();
-		void Update(const float delta);
-		float CurTime();
+		virtual ~Game();
 		
 		// Callbacks
 		virtual void OnStart();
@@ -25,6 +19,20 @@ class Game {
 		virtual void OnMouseDown(char button, unsigned int x, unsigned int y);
 		virtual void OnMouseUp(char button, unsigned int x, unsigned int y);
 		
+		// Properties
+		//void SetTitle(std::u32string title);
+		//void SetResolution(unsigned int width, unsigned int height);
+		
+		// Runtime Management
+		void Initialize(int argc, char **argv, std::string title, unsigned int scrWidth, unsigned int scrHeight);
+		void Start();
+		void Terminate();
+		
+		void Render();
+		void Update();
+		void Keyboard(unsigned char key);
+		float CurTime();
+		
 	private:
 		Canvas mainCanvas;
 		bool shouldTerminate;
@@ -35,3 +43,4 @@ class Game {
 		float timeStepConstant;
 		float timeStepMin;
 };
+#endif

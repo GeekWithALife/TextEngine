@@ -1,3 +1,9 @@
+#ifndef INC_TextEngine_Canvas
+#define INC_TextEngine_Canvas
+
+#include "NEngine.hpp"
+#include "CTextBuffer.hpp"
+
 class Canvas {
 	public:
 		Canvas();
@@ -20,10 +26,11 @@ class Canvas {
 		void Clear();
 		void Swap();
 		
-		TextBuffer& GetBuffer();
+		TextBuffer GetBuffer();
 		
 	private:
 		int bufferID;
 		TextBuffer buffers[2];
 		
-}
+};
+#endif
