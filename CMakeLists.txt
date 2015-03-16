@@ -11,8 +11,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
 # use color messages
 #include(${CMAKE_SOURCE_DIR}/CMakeModules/colorMessage.cmake)
 
-# BUILD_LIST
+# Add names to this list to make your own projects!
 set(BUILD_LIST main)
+
 if(WIN32)
 	# Specify your custom search paths for Windows platforms
 	
@@ -20,10 +21,10 @@ if(WIN32)
 	set(WINDOWS_LIBRARY_PATH "D:/Env/Libraries/")
 	
 	# MinGW installation path.
-	set(MINGW_ROOT_PATH "D:/Env/MinGW/bin/")
+	#set(MINGW_ROOT_PATH "D:/Env/MinGW/bin/")
 	
-	set(CMAKE_C_COMPILER "${MINGW_ROOT_PATH}gcc.exe")
-	set(CMAKE_CXX_COMPILER "${MINGW_ROOT_PATH}g++.exe")
+	#set(CMAKE_C_COMPILER "${MINGW_ROOT_PATH}gcc.exe")
+	#set(CMAKE_CXX_COMPILER "${MINGW_ROOT_PATH}g++.exe")
 
 	# Specify GLUT installation
 	set(GLUT_ROOT_PATH "${WINDOWS_LIBRARY_PATH}freeglut/" ${GLUT_ROOT_PATH})
@@ -137,13 +138,17 @@ include_directories(${FREETYPE_INCLUDE_DIRS})
 set(COMMON_LIBRARIES ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES} ${M_LIB} ${GLUT_LIBRARIES})
 set(COMMON_SOURCES "")
 
+# Create a static library containing all files that we regularly use.
+include_directories("include")
+set(FILES_IN_ENGINE src/CFont.cpp src/CCharacter.cpp src/CTextBuffer.cpp src/CCanvas.cpp src/CGame.cpp)
+add_library(TextEngine STATIC ${FILES_IN_ENGINE})
+set_target_properties(TextEngine PROPERTIES COMPILE_DEFINITIONS "${PREPROC_DEFINE}")
+
 # Make compilation rule for all programs that don't need ImageMagick or ASSIMIP
 foreach(arg ${BUILD_LIST})
-	set(exec ${arg})
-	add_executable(${exec} ${CMAKE_SOURCE_DIR}/src/${arg}.cpp 
-		${CMAKE_SOURCE_DIR}/src/CFont.cpp ${CMAKE_SOURCE_DIR}/src/CCharacter.cpp ${CMAKE_SOURCE_DIR}/src/CTextBuffer.cpp ${CMAKE_SOURCE_DIR}/src/CCanvas.cpp ${CMAKE_SOURCE_DIR}/src/CGame.cpp )
-	target_link_libraries(${exec} ${COMMON_LIBRARIES})
+	add_executable(${arg} ${arg}.cpp)
+	target_link_libraries(${arg} TextEngine ${COMMON_LIBRARIES})
 	message(${COMMON_LIBRARIES})
-	set_target_properties(${exec} PROPERTIES COMPILE_DEFINITIONS "MOUSEMOVE_GLUT;${MISSING_VRPN_DEFINITION}")
+	set_target_properties(${arg} PROPERTIES COMPILE_DEFINITIONS "MOUSEMOVE_GLUT;${MISSING_VRPN_DEFINITION}")
 endforeach()
 

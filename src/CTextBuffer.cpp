@@ -1,4 +1,4 @@
-#include "CTextBuffer.hpp"
+#include "../include/CTextBuffer.hpp"
 
 TextBuffer::TextBuffer() {
 	rows = 0;

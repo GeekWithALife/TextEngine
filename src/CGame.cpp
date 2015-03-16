@@ -1,4 +1,5 @@
-#include "CGame.hpp"
+#include "../include/CGame.hpp"
+
 static Game *TheGame = NULL;
 
 Game::Game() {

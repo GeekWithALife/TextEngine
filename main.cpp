@@ -1,5 +1,5 @@
-#include "NEngine.hpp"
-#include "CGame.hpp"
+#include "include/NEngine.hpp"
+#include "include/CGame.hpp"
 #include <stdio.h>
 
 class MyGame : public Game {

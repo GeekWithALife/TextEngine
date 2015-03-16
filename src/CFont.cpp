@@ -1,4 +1,4 @@
-#include "CFont.hpp"
+#include "../include/CFont.hpp"
 
 FT_Library Font::lib;
 

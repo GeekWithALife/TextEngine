@@ -1,4 +1,4 @@
-#include "CCharacter.hpp"
+#include "../include/CCharacter.hpp"
 
 Character::Character() {
 	SetChar(0);
