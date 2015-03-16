@@ -12,11 +12,11 @@ Clone the repo: `git clone https://github.com/GeekWithALife/TextEngine.git`
 
 ### Windows
 
-- Install (CMake)[http://www.cmake.org/]
-- Install (MinGW)[http://www.mingw.org/]
-- Install (FreeType)[http://freetype.org/]
-- Install (FreeGLUT)[http://freeglut.sourceforge.net/]
-- Install (GLEW)[http://glew.sourceforge.net/]
+- Install [CMake](http://www.cmake.org/)
+- Install [MinGW](http://www.mingw.org/)
+- Install [FreeType](http://freetype.org/)
+- Install [FreeGLUT](http://freeglut.sourceforge.net/)
+- Install [GLEW](http://glew.sourceforge.net/)
 
 ### Linux
 
@@ -36,9 +36,9 @@ sudo apt-get install libglew-dev
 
 Open the repository folder in the Windows command prompt by holding Shift and right-clicking in/on the folder and selecting "Open command window here".
 
-First make sure the fully qualified path to your MinGW/bin folder is at the START of your evironment path.
+First make sure the fully qualified path to your MinGW/bin folder is at the START of your evironment path. You can ensure this by running the following.
 
-`set path=<YOUR_MINGW_INSTALL>/bin;%path%`
+`set path=[YOUR_MINGW_INSTALL]/bin;%path%`
 
 Next we will configure the makefile.
 
