@@ -27,6 +27,7 @@ typedef std::u32string UnicodeString;
 typedef char32_t UnicodeChar;
 
 static UnicodeString delim (1, '\n');
+
 namespace TextEngine_NAMESPACE {
 	static UnicodeString DELIMITER = delim;
 }

@@ -1,8 +1,10 @@
 # TextEngine
 
-This is an old personal project that used ncurses to make games with ASCII art. It had a basic game loop with Z-indexing and even animation! Alas, it was poorly written and buggy.
+This is an old personal project that once used ncurses to make games with ASCII art. It had a basic game loop with Z-indexing and even animation! Alas, it was poorly written and buggy.
 
 I'm currently rewriting it to use OpenGL and FreeType. It's an attempt to teach myself about basic game engine architecture.
+
+At some point in the future I want to re-add ncurses support and make it possible to use that instead of OpenGL. The way I've got it set up it should be easy to do either.
 
 I'd also like to integrate it with Lua.
 
