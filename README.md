@@ -25,7 +25,9 @@ You will need to install the following libraries as well.
 
 Some of the libraries may need to be compiled.
 
-Once you have the library binaries available, it is best to install them in your MinGW environment. Otherwise, you'll need to edit CMakeLists to tell it where to find them. I did the latter, but if you know enough to do otherwise I would advise it.
+Once you have the library binaries available, either install them in your MinGW environment or edit Windows.cmake to tell it where to find them.
+
+You will also need to move the relevant binaries to the directory where the final executable ends up.
 
 ### Linux
 
@@ -41,6 +43,8 @@ sudo apt-get install libglew-dev
 
 ## Development
 
+This project comes with a default main.cpp file. You may edit this, or make a new file and add it to the build list in the BuildList.cmake file.
+
 ### Windows
 
 Open the repository folder in the Windows command prompt by holding Shift and right-clicking in/on the folder and selecting "Open command window here".
@@ -51,10 +55,20 @@ First make sure the fully qualified path to your MinGW/bin folder is at the STAR
 
 Next we will configure the makefile.
 
-`cmake -G "MinGW Makefiles" .`
+Run CMake: `cmake -G "MinGW Makefiles" .`
 
 If there are no errors, congrats! You installed everything in the right places. Now compile.
 
-`mingw32-make`
+Make the project: `mingw32-make`
 
 And that's that! If for some reason you need to start over, it is highly advisable you run `./cleanup.sh` beforehand.
+
+### Linux
+
+Open the repository folder in terminal.
+
+Run CMake: `cmake .`
+
+Make the project: `make`
+
+And you're done. Isn't Linux nice?

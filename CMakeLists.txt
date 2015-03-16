@@ -11,39 +11,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
 # use color messages
 #include(${CMAKE_SOURCE_DIR}/CMakeModules/colorMessage.cmake)
 
-# Add names to this list to make your own projects!
-set(BUILD_LIST main)
+include(BuildList.cmake)
 
-if(WIN32)
-	# Specify your custom search paths for Windows platforms
-	
-	# A folder where you are keeping all of your libs/includes.
-	set(WINDOWS_LIBRARY_PATH "D:/Env/Libraries/")
-	
-	# MinGW installation path.
-	#set(MINGW_ROOT_PATH "D:/Env/MinGW/bin/")
-	
-	#set(CMAKE_C_COMPILER "${MINGW_ROOT_PATH}gcc.exe")
-	#set(CMAKE_CXX_COMPILER "${MINGW_ROOT_PATH}g++.exe")
-
-	# Specify GLUT installation
-	set(GLUT_ROOT_PATH "${WINDOWS_LIBRARY_PATH}freeglut/" ${GLUT_ROOT_PATH})
-	
-	# I want to give this a try some day
-	set(GLFW_LOCATION "${WINDOWS_LIBRARY_PATH}glfw-3.1" ${GLUT_ROOT_PATH})
-	set(CMAKE_LIBRARY_PATH "${GLFW_LOCATION}/src" ${CMAKE_LIBRARY_PATH})
-	set(CMAKE_INCLUDE_PATH "${GLFW_LOCATION}/include" ${CMAKE_INCLUDE_PATH})
-	
-	# Specify GLEW installation
-	set(GLEW_ROOT_PATH "${WINDOWS_LIBRARY_PATH}glew-1.12.0/")
-	set(CMAKE_LIBRARY_PATH "${GLEW_ROOT_PATH}lib/Release/Win32" ${CMAKE_LIBRARY_PATH})
-	set(CMAKE_INCLUDE_PATH "${GLEW_ROOT_PATH}include" ${CMAKE_INCLUDE_PATH})
-	
-	# Specify FreeType installation
-	set(FREETYPE_ROOT_PATH "${WINDOWS_LIBRARY_PATH}freetype-2.5.5/")
-	set(CMAKE_LIBRARY_PATH "${FREETYPE_ROOT_PATH}objs" ${CMAKE_LIBRARY_PATH})
-	set(CMAKE_INCLUDE_PATH "${FREETYPE_ROOT_PATH}include" ${CMAKE_INCLUDE_PATH})
-endif()
+include(Windows.cmake)
 
 # Use glxinfo or glewinfo to determine OpenGL version if they are
 # available. Fail if a high enough version of OpenGL is not supported.
