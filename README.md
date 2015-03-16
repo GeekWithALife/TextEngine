@@ -12,11 +12,20 @@ Clone the repo: `git clone https://github.com/GeekWithALife/TextEngine.git`
 
 ### Windows
 
-- Install [CMake](http://www.cmake.org/)
-- Install [MinGW](http://www.mingw.org/)
-- Install [FreeType](http://freetype.org/)
-- Install [FreeGLUT](http://freeglut.sourceforge.net/)
-- Install [GLEW](http://glew.sourceforge.net/)
+You will need to install the following to be able to configure/compile this project.
+
+- [CMake](http://www.cmake.org/)
+- [MinGW](http://www.mingw.org/)
+
+You will need to install the following libraries as well.
+
+- [FreeType](http://freetype.org/)
+- [FreeGLUT](http://freeglut.sourceforge.net/)
+- [GLEW](http://glew.sourceforge.net/)
+
+Some of the libraries may need to be compiled.
+
+Once you have the library binaries available, it is best to install them in your MinGW environment. Otherwise, you'll need to edit CMakeLists to tell it where to find them. I did the latter, but if you know enough to do otherwise I would advise it.
 
 ### Linux
 
