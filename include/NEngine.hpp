@@ -29,7 +29,7 @@ typedef char32_t UnicodeChar;
 
 static UnicodeString delim (1, '\n');
 static std::string font ("./fonts/cour.ttf");
-static std::string shader ("./shaders/cour.ttf");
+static std::string shader ("./shaders/text");
 
 namespace TextEngine_NAMESPACE {
 	static UnicodeString DefaultDelimiter = delim;

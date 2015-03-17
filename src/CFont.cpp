@@ -1,4 +1,6 @@
 #include "../include/CFont.hpp"
+#include <iostream>
+#include <fstream>
 
 FT_Library Font::lib;
 std::unordered_map<std::string, FT_Face> Font::cache;
@@ -6,15 +8,172 @@ GLuint Font::program = 0;
 GLuint Font::tex = 0;
 GLuint Font::vbo = 0;
 	
-bool Font::Initialize(std::string vertexSource, std::string fragmentSource) {
+static GLuint CreateShader(std::string vertexSource, std::string fragmentSource) {
+	GLuint program = 0;
+	printf("Creating vertex shader...\n");
+	//Create an empty vertex shader handle
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	 
+	printf("Setting source...\n");
+	//Send the vertex shader source code to GL
+	//Note that std::string's .c_str is NULL character terminated.
+	const GLchar *source = (const GLchar *)vertexSource.c_str();
+	glShaderSource(vertexShader, 1, &source, 0);
+	 
+	printf("Compiling...\n");
+	//Compile the vertex shader
+	glCompileShader(vertexShader);
+	 
+	printf("Checking...\n");
+	GLint isCompiled = 0;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
+	if(isCompiled == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+	 
+		//The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
+	 
+		//We don't need the shader anymore.
+		glDeleteShader(vertexShader);
+	 
+		//Use the infoLog as you see fit.
+		printf("Failed to compile vertex shader!\n");
+		for (int i = 0; i < infoLog.size(); ++i)
+			printf("%c", infoLog[i]);
+		printf("\n");
+	 
+		//In this simple program, we'll just leave
+		return 0;
+	}
+	 
+	printf("Creating fragment shader...\n");
+	//Create an empty fragment shader handle
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	 
+	printf("Setting source...\n");
+	//Send the fragment shader source code to GL
+	//Note that std::string's .c_str is NULL character terminated.
+	source = (const GLchar *)fragmentSource.c_str();
+	glShaderSource(fragmentShader, 1, &source, 0);
+	 
+	printf("Compiling...\n");
+	//Compile the fragment shader
+	glCompileShader(fragmentShader);
+	 
+	printf("Checking...\n");
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isCompiled);
+	if(isCompiled == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+	 
+		//The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
+	 
+		//We don't need the shader anymore.
+		glDeleteShader(fragmentShader);
+		//Either of them. Don't leak shaders.
+		glDeleteShader(vertexShader);
+	 
+		//Use the infoLog as you see fit.
+		printf("Failed to compile fragment shader!\n");
+	 
+		//In this simple program, we'll just leave
+		return 0;
+	}
+	 
+	printf("Creating shader program...\n");
+	//Vertex and fragment shaders are successfully compiled.
+	//Now time to link them together into a program.
+	//Get a program object.
+	program = glCreateProgram();
+	 
+	printf("Attaching shaders...\n");
+	//Attach our shaders to our program
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+	 
+	printf("Linking...\n");
+	//Link our program
+	glLinkProgram(program);
+	 
+	printf("Checking...\n");
+	//Note the different functions here: glGetProgram* instead of glGetShader*.
+	GLint isLinked = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
+	if(isLinked == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+	 
+		//The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+	 
+		//We don't need the program anymore.
+		glDeleteProgram(program);
+		//Don't leak shaders either.
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+	 
+		//Use the infoLog as you see fit.
+		printf("Failed to link!\n");
+	 
+		//In this simple program, we'll just leave
+		return 0;
+	}
+	 
+	printf("Detaching shaders...\n");
+	//Always detach shaders after a successful link.
+	glDetachShader(program, vertexShader);
+	glDetachShader(program, fragmentShader);
+	
+	printf("Returning...\n");
+	return program;
+}
+static void ReadShaderFile(std::string fileName, std::string& source) {
+	std::ifstream is (fileName, std::ifstream::binary);
+	if (is) {
+		// get length of file:
+		is.seekg (0, is.end);
+		int length = is.tellg();
+		is.seekg (0, is.beg);
+
+		char * buffer = new char [length];
+
+		std::cout << "Reading " << length << " characters... ";
+		// read data as a block:
+		is.read (buffer,length);
+
+		if (is)
+		  std::cout << "all characters read successfully.";
+		else
+		  std::cout << "error: only " << is.gcount() << " could be read";
+		is.close();
+		
+		source.assign(buffer);
+		
+		delete[] buffer;
+	}
+}
+bool Font::Initialize(std::string vertexFile, std::string fragmentFile) {
 	if (FT_Init_FreeType(&Font::lib)) {
 		fprintf(stderr, "Could not initialize the FreeType library\n");
 		return false;
 	}
 	
-	/*Font::program = CreateShader(vertexSource, fragmentSource);
+	std::string vertexSource;
+	std::string fragmentSource;
+	ReadShaderFile(vertexFile, vertexSource);
+	ReadShaderFile(fragmentFile, fragmentSource);
 	
-	if (Font::program <= 0) {
+	Font::program = CreateShader(vertexSource, fragmentSource);
+	
+	if (Font::program == 0) {
 		fprintf(stderr, "Could not initialize the shader\n");
 		return false;
 	}
@@ -49,18 +208,18 @@ bool Font::Initialize(std::string vertexSource, std::string fragmentSource) {
 	glGenBuffers(1, &Font::vbo);
 	glEnableVertexAttribArray(attribute_coord);
 	glBindBuffer(GL_ARRAY_BUFFER, Font::vbo);
-	glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);*/
+	glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	return true;
 }
 
 bool Font::Initialize() {
-	return Font::Initialize("shaders/text.vert", "shaders/text.frag");
+	return Font::Initialize("./shaders/text.vert", "./shaders/text.frag");
 }
 
 void Font::Release() {
-	//glDeleteBuffers(1, &Font::vbo);
-	//glDeleteTextures(1, &Font::tex);
+	glDeleteBuffers(1, &Font::vbo);
+	glDeleteTextures(1, &Font::tex);
 	// Release FreeType
 	FT_Done_FreeType(Font::lib);
 }
@@ -79,10 +238,10 @@ Font::~Font() {}
 
 bool Font::LoadFont(const std::string name) {
 	if (Font::cache.find(name) == Font::cache.end()) {
-		//printf("Initializing new font! %p\n", Font::cache[name]);
+		//printf("Attempting to init new font: %s\n", name.c_str());
 		int err = 0;
 		if (err = FT_New_Face(Font::lib, name.c_str(), 0, &face)) {
-			fprintf(stderr, "Error 0x%04x: Could not open font\n", err);
+			fprintf(stderr, "Error 0x%04x: Could not open font! Is FreeType initialized?\n", err);
 			return false;
 		}
 		printf("Initialized new font: %s\n", face->family_name);

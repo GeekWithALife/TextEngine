@@ -22,7 +22,7 @@ class Font {
 		bool GetGlyph(FT_GlyphSlot& glyph);
 		void DrawGlyph(FT_GlyphSlot glyph, unsigned int &x, unsigned int &y, const float sx, const float sy);
 		
-		static bool Initialize(std::string vertexSource, std::string fragmentSource);
+		static bool Initialize(std::string vertexFile, std::string fragmentFile);
 		static bool Initialize();
 		static void Release();
 		
