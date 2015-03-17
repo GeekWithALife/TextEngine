@@ -1,15 +1,15 @@
 #include "../include/CCharacter.hpp"
 
-Character::Character() {
-	SetChar(0);
-}
 Character::Character(char32_t code) {
 	SetChar(code);
+	SetFont(TextEngine_NAMESPACE::DefaultFont);
+}
+Character::Character() {
+	SetChar(0);
+	SetFont(TextEngine_NAMESPACE::DefaultFont);
 }
 
-Character::~Character() {
-	
-}
+Character::~Character() {}
 
 bool Character::IsUnicode() {
 	return codePoint > 127;
@@ -22,11 +22,11 @@ char32_t Character::GetChar() {
 	return codePoint;
 }
 
-void Character::SetFont(std::string name) {
-	fontName = name;
+void Character::SetFont(std::string font) {
+	fontRef.LoadFont(font);
 }
-std::string Character::GetFont() {
-	return fontName;
+Font Character::GetFont() {
+	return fontRef;
 }
 
 void Character::SetColor(char r, char g, char b, char a) {

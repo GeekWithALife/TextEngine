@@ -11,3 +11,5 @@ rm -vf Makefile
 rm -vf *~
 rm -vf \#*\#
 rm -vf *.exe
+rm -vf *.stackdump
+rm -vf libTextEngine.a

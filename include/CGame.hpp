@@ -3,6 +3,7 @@
 
 #include "NEngine.hpp"
 #include "CCanvas.hpp"
+#include "CFont.hpp"
 
 class Game {
 	public:
@@ -24,9 +25,10 @@ class Game {
 		//void SetResolution(unsigned int width, unsigned int height);
 		
 		// Runtime Management
-		void Initialize(int argc, char **argv, std::string title, unsigned int scrWidth, unsigned int scrHeight);
+		bool Setup(int argc, char **argv, std::string title, unsigned int scrWidth, unsigned int scrHeight);
 		void Start();
 		void Terminate();
+		void Destroy();
 		
 		void Render();
 		void Update();

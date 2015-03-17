@@ -11,6 +11,7 @@
 
 // GLEW
 #include <GL/glew.h>
+#pragma comment(lib, "glew32.lib")
 
 // GLUT
 #ifdef __APPLE__
@@ -22,14 +23,18 @@
 // Freetype
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_OUTLINE_H
+#include FT_GLYPH_H
   
 typedef std::u32string UnicodeString;
 typedef char32_t UnicodeChar;
 
 static UnicodeString delim (1, '\n');
+static std::string font ("./fonts/cour.ttf");
 
 namespace TextEngine_NAMESPACE {
-	static UnicodeString DELIMITER = delim;
+	static UnicodeString DefaultDelimiter = delim;
+	static std::string DefaultFont = font;
 }
 
 #endif

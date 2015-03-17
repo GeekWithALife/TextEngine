@@ -13,7 +13,7 @@ TextBuffer::TextBuffer(const UnicodeString str, UnicodeString delimiter) {
 	InitFromString(str, delimiter);
 }
 TextBuffer::TextBuffer(const UnicodeString str) {
-	InitFromString(str, TextEngine_NAMESPACE::DELIMITER);
+	InitFromString(str, TextEngine_NAMESPACE::DefaultDelimiter);
 }
 
 TextBuffer::~TextBuffer() {
@@ -71,7 +71,7 @@ void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const un
 }
 
 void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1, const UnicodeString str) {
-	SetRange(x0, y0, x1, y1, str, TextEngine_NAMESPACE::DELIMITER);
+	SetRange(x0, y0, x1, y1, str, TextEngine_NAMESPACE::DefaultDelimiter);
 }
 
 bool TextBuffer::IsValid() {
@@ -129,7 +129,7 @@ void TextBuffer::InitFromString(const UnicodeString str, const UnicodeString del
 	unsigned int width, height;
 	GetLines(str, delimiter, lines, width, height);
 	SetSize(width, height);
-	SetRange(0, 0, width, height, str, TextEngine_NAMESPACE::DELIMITER);
+	SetRange(0, 0, width, height, str, TextEngine_NAMESPACE::DefaultDelimiter);
 }
 void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1, std::vector<UnicodeString> lines) {
 	unsigned int width, height;

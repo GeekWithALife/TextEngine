@@ -11,9 +11,26 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
 # use color messages
 #include(${CMAKE_SOURCE_DIR}/CMakeModules/colorMessage.cmake)
 
+# Get the list of programs to build
 include(BuildList.cmake)
 
-include(Windows.cmake)
+# Get custom Windows library installation paths
+if (WIN32)
+	include(Windows.cmake)
+	
+	# GLUT installation
+	set(GLUT_ROOT_PATH "${WINDOWS_LIBRARY_PATH}${WINDOWS_GLUT_FOLDER}/" ${GLUT_ROOT_PATH})
+
+	# GLEW installation
+	set(GLEW_ROOT_PATH "${WINDOWS_LIBRARY_PATH}${WINDOWS_GLEW_FOLDER}/")
+	set(CMAKE_LIBRARY_PATH "${GLEW_ROOT_PATH}lib" ${CMAKE_LIBRARY_PATH})
+	set(CMAKE_INCLUDE_PATH "${GLEW_ROOT_PATH}include" ${CMAKE_INCLUDE_PATH})
+
+	# FreeType installation
+	set(FREETYPE_ROOT_PATH "${WINDOWS_LIBRARY_PATH}${WINDOWS_FREETYPE_FOLDER}/")
+	set(CMAKE_LIBRARY_PATH "${FREETYPE_ROOT_PATH}" ${CMAKE_LIBRARY_PATH})
+	set(CMAKE_INCLUDE_PATH "${FREETYPE_ROOT_PATH}include" ${CMAKE_INCLUDE_PATH})
+endif()
 
 # Use glxinfo or glewinfo to determine OpenGL version if they are
 # available. Fail if a high enough version of OpenGL is not supported.
@@ -39,19 +56,19 @@ SITE_NAME(HOSTNAME)
 
 
 # Doxygen documentation
-option(BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" ON)
-if(BUILD_DOCUMENTATION)
-	find_package(Doxygen)
-	if(DOXYGEN_FOUND)
-	#-- Add a custom target to run Doxygen when ever the project is built
-	add_custom_target (docs 
-                     COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-                     SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
-	# Add or remove 'ALL' after 'docs' above to enable/disable doxygen generation when running "make"
-	else()
-		message(WARNING "Not creating Doxygen documents because doxygen was not found on this system.")
-	endif()
-endif()
+# option(BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" ON)
+# if(BUILD_DOCUMENTATION)
+	# find_package(Doxygen)
+	# if(DOXYGEN_FOUND)
+	# #-- Add a custom target to run Doxygen when ever the project is built
+	# add_custom_target (docs 
+                     # COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
+                     # SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
+	# # Add or remove 'ALL' after 'docs' above to enable/disable doxygen generation when running "make"
+	# else()
+		# message(WARNING "Not creating Doxygen documents because doxygen was not found on this system.")
+	# endif()
+# endif()
 
 
 # === Libraries that we use ===
@@ -101,12 +118,11 @@ if(NOT GLEW_NEW_ENOUGH)
 endif()
 
 # --- FreeType ---
-find_package(FreeType REQUIRED)
+find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # Collect libraries that all programs use together into one cmake variable
-set(COMMON_LIBRARIES ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES} ${M_LIB} ${GLUT_LIBRARIES})
-set(COMMON_SOURCES "")
+set(COMMON_LIBRARIES ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES} ${M_LIB} -lpthread -mwindows)
 
 # Create a static library containing all files that we regularly use.
 include_directories("include")
@@ -119,6 +135,6 @@ foreach(arg ${BUILD_LIST})
 	add_executable(${arg} ${arg}.cpp)
 	target_link_libraries(${arg} TextEngine ${COMMON_LIBRARIES})
 	message(${COMMON_LIBRARIES})
-	set_target_properties(${arg} PROPERTIES COMPILE_DEFINITIONS "MOUSEMOVE_GLUT;${MISSING_VRPN_DEFINITION}")
+	set_target_properties(${arg} PROPERTIES COMPILE_DEFINITIONS "${PREPROC_DEFINE}")
 endforeach()
 

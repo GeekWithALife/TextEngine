@@ -2,6 +2,7 @@
 #define INC_TextEngine_Character
 
 #include "NEngine.hpp"
+#include "CFont.hpp"
 
 class Character {
 	public:
@@ -14,8 +15,8 @@ class Character {
 		void SetChar(char32_t code);
 		char32_t GetChar();
 		
-		void SetFont(std::string name);
-		std::string GetFont();
+		void SetFont(std::string font);
+		Font GetFont();
 		
 		void SetColor(char r, char g, char b, char a);
 		void SetColor(char r, char g, char b);
@@ -27,6 +28,6 @@ class Character {
 		char32_t codePoint;
 		char fgColor[4];
 		char bgColor[4];
-		std::string fontName;
+		Font fontRef;
 };
 #endif
