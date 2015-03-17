@@ -3,11 +3,15 @@
 #include <fstream>
 
 FT_Library Font::lib;
-std::unordered_map<std::string, FT_Face> Font::cache;
+std::unordered_map<std::string, Font> Font::fontCache;
+std::unordered_map<std::string, FT_Face> Font::faceCache;
 GLuint Font::program = 0;
 GLuint Font::tex = 0;
 GLuint Font::vbo = 0;
-	
+GLuint Font::uniform_tex = 0;
+GLuint Font::uniform_color = 0;
+GLuint Font::attribute_coord = 0;
+
 static GLuint CreateShader(std::string vertexSource, std::string fragmentSource) {
 	GLuint program = 0;
 	printf("Creating vertex shader...\n");
@@ -178,16 +182,16 @@ bool Font::Initialize(std::string vertexFile, std::string fragmentFile) {
 		return false;
 	}
 	
-	GLuint uniform_tex = glGetUniformLocation(Font::program, "tex");
-	GLuint uniform_color = glGetUniformLocation(Font::program, "color");
-	GLuint attribute_coord = glGetAttribLocation(Font::program, "coord");
+	Font::uniform_tex = glGetUniformLocation(Font::program, "tex");
+	Font::uniform_color = glGetUniformLocation(Font::program, "color");
+	Font::attribute_coord = glGetAttribLocation(Font::program, "coord");
 	
 	// Before we can start rendering text, there are still some things that need initialization.
 	// First, we will use a single texture object to render all the glyphs:
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &Font::tex);
 	glBindTexture(GL_TEXTURE_2D, Font::tex);
-	glUniform1i(uniform_tex, 0);
+	glUniform1i(Font::uniform_tex, 0);
 
 	// To prevent certain artifacts when a character is not rendered exactly on pixel boundaries, 
 	// we should clamp the texture at the edges, and enable linear interpolation:
@@ -206,9 +210,9 @@ bool Font::Initialize(std::string vertexFile, std::string fragmentFile) {
 	
 	// We also need to set up a vertex buffer object for our combined vertex and texture coordinates:
 	glGenBuffers(1, &Font::vbo);
-	glEnableVertexAttribArray(attribute_coord);
+	glEnableVertexAttribArray(Font::attribute_coord);
 	glBindBuffer(GL_ARRAY_BUFFER, Font::vbo);
-	glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(Font::attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	return true;
 }
@@ -222,6 +226,16 @@ void Font::Release() {
 	glDeleteTextures(1, &Font::tex);
 	// Release FreeType
 	FT_Done_FreeType(Font::lib);
+}
+
+bool Font::Exists(std::string name) {
+	return (Font::fontCache.find(name) != Font::fontCache.end());
+}
+Font Font::Get(std::string name) {
+	return Font::fontCache[name];
+}
+void Font::Cache(std::string name, Font font) {
+	Font::fontCache[name] = font;
 }
 	
 Font::Font() {
@@ -237,7 +251,7 @@ Font::Font(const std::string name) {
 Font::~Font() {}
 
 bool Font::LoadFont(const std::string name) {
-	if (Font::cache.find(name) == Font::cache.end()) {
+	if (Font::faceCache.find(name) == Font::faceCache.end()) {
 		//printf("Attempting to init new font: %s\n", name.c_str());
 		int err = 0;
 		if (err = FT_New_Face(Font::lib, name.c_str(), 0, &face)) {
@@ -245,10 +259,10 @@ bool Font::LoadFont(const std::string name) {
 			return false;
 		}
 		printf("Initialized new font: %s\n", face->family_name);
-		Font::cache[name] = face;
+		Font::faceCache[name] = face;
 	}
-	//printf("Found font in cache!\n");
-	face = Font::cache[name];
+	//printf("Found font in faceCache!\n");
+	face = Font::faceCache[name];
 	fontName = name;
 	return true;
 }
@@ -268,16 +282,7 @@ bool Font::SetSize(const unsigned int size) {
 	}
 	return true;
 }
-bool Font::LoadCharacter(const char ch) {
-	if (!IsValid())
-		return false;
-	if (FT_Load_Char(face, ch, FT_LOAD_RENDER)) {
-		fprintf(stderr, "Could not load character '%c'\n", ch);
-		return false;
-	}
-	return true;
-}
-bool Font::LoadCharacter(const char32_t ch) {
+bool Font::LoadCharacter(const UnicodeChar ch) {
 	if (!IsValid())
 		return false;
 	if (FT_Load_Char(face, ch, FT_LOAD_RENDER)) {
@@ -294,17 +299,20 @@ bool Font::GetGlyph(FT_GlyphSlot& glyph) {
 	return true;
 }
 
-void Font::DrawGlyph(FT_GlyphSlot glyph, unsigned int &x, unsigned int &y, const float sx, const float sy) {
+void Font::DrawGlyph(unsigned int &x, unsigned int &y, const float sx, const float sy) {
+	FT_GlyphSlot glyph;
+	if (!GetGlyph(glyph))
+		return;
     glTexImage2D(
-      GL_TEXTURE_2D,
-      0,
-      GL_RED,
-      glyph->bitmap.width,
-      glyph->bitmap.rows,
-      0,
-      GL_RED,
-      GL_UNSIGNED_BYTE,
-      glyph->bitmap.buffer
+		GL_TEXTURE_2D,
+		0,
+		GL_RED,
+		glyph->bitmap.width,
+		glyph->bitmap.rows,
+		0,
+		GL_RED,
+		GL_UNSIGNED_BYTE,
+		glyph->bitmap.buffer
     );
  
     float x2 = x + glyph->bitmap_left * sx;
@@ -319,8 +327,8 @@ void Font::DrawGlyph(FT_GlyphSlot glyph, unsigned int &x, unsigned int &y, const
         {x2 + w, -y2 - h, 1, 1},
     };
  
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(box), box, GL_DYNAMIC_DRAW);
-    //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(box), box, GL_DYNAMIC_DRAW);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
     x += (glyph->advance.x >> 6) * sx;
     y += (glyph->advance.y >> 6) * sy;
@@ -336,4 +344,4 @@ static void render_text(const char *text, float x, float y, float sx, float sy) 
   }
 }*/
 //FT_Face Font::GetFace(std::string fontName) { return NULL; }
-//FT_Bitmap Font::GetBitmap(std::string fontName, char32_t ch) { return NULL; }
+//FT_Bitmap Font::GetBitmap(std::string fontName, UnicodeChar ch) { return NULL; }

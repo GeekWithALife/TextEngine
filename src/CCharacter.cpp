@@ -1,10 +1,12 @@
 #include "../include/CCharacter.hpp"
 
-Character::Character(char32_t code) {
+Character::Character(UnicodeChar code) {
+	SetColor(0, 0, 0, 255);
 	SetChar(code);
 	SetFont(TextEngine_NAMESPACE::DefaultFont);
 }
 Character::Character() {
+	SetColor(0, 0, 0, 255);
 	SetChar(0);
 	SetFont(TextEngine_NAMESPACE::DefaultFont);
 }
@@ -15,15 +17,18 @@ bool Character::IsUnicode() {
 	return codePoint > 127;
 }
 
-void Character::SetChar(char32_t code) {
+void Character::SetChar(UnicodeChar code) {
 	codePoint = code;
 }
-char32_t Character::GetChar() {
+UnicodeChar Character::GetChar() {
 	return codePoint;
 }
 
 void Character::SetFont(std::string font) {
-	fontRef.LoadFont(font);
+	if (Font::Exists(font))
+		fontRef = Font::Get(font);
+	else
+		fontRef.LoadFont(font);
 }
 Font Character::GetFont() {
 	return fontRef;
@@ -37,6 +42,10 @@ void Character::SetColor(char r, char g, char b, char a) {
 }
 void Character::SetColor(char r, char g, char b) {
 	SetColor(r, g, b, 255);
+}
+void Character::GetColor(float color[4]) {
+	for (unsigned int i = 0; i < 4; i++)
+		color[i] = fgColor[i]/255.0;
 }
 
 void Character::SetBackgroundColor(char r, char g, char b, char a) {

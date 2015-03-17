@@ -9,6 +9,7 @@
 #include <vector>
 
 // Libraries
+#include "utf8/utf8.h"
 
 // GLEW
 #include <GL/glew.h>
@@ -24,8 +25,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-typedef std::u32string UnicodeString;
-typedef char32_t UnicodeChar;
+typedef std::string UnicodeString;
+typedef char UnicodeChar;
+//typedef std::u32string UnicodeString;
+//typedef char32_t UnicodeChar;
 
 static UnicodeString delim (1, '\n');
 static std::string font ("./fonts/cour.ttf");

@@ -7,25 +7,26 @@
 class Character {
 	public:
 		Character();
-		Character(char32_t code);
+		Character(UnicodeChar code);
 		~Character();
 		
 		bool IsUnicode();
 		
-		void SetChar(char32_t code);
-		char32_t GetChar();
+		void SetChar(UnicodeChar code);
+		UnicodeChar GetChar();
 		
 		void SetFont(std::string font);
 		Font GetFont();
 		
 		void SetColor(char r, char g, char b, char a);
 		void SetColor(char r, char g, char b);
+		void GetColor(float color[4]);
 		
 		void SetBackgroundColor(char r, char g, char b, char a);
 		void SetBackgroundColor(char r, char g, char b);
 		
 	private:
-		char32_t codePoint;
+		UnicodeChar codePoint;
 		char fgColor[4];
 		char bgColor[4];
 		Font fontRef;

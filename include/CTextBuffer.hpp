@@ -15,10 +15,6 @@ class TextBuffer {
 		TextBuffer(const UnicodeString str, const UnicodeString delimiter);
 		// Create a buffer using a string with the default delimiter (newline)
 		TextBuffer(const UnicodeString str);
-		// Create a buffer using the contents of a file with a specified delimiter.
-		TextBuffer(std::string fileName, const UnicodeString delimiter);
-		// Create a buffer using the contents of the file [fileName] and the default delimiter (newline).
-		TextBuffer(std::string fileName);
 		~TextBuffer();
 		
 		void SetSize(const unsigned int width, const unsigned int height);

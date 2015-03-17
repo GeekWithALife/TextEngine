@@ -8,7 +8,14 @@ class MyGame : public Game {
 	void OnTerminate() {
 		printf("Terminating...\n");
 	}
-	void OnRender(Canvas canvas) {}
+	void OnRender(Canvas canvas) {
+		printf("Rendering 1...\n");
+		std::string strVal = "abc\ndef\nghi";
+		TextBuffer buf(strVal);
+		printf("Rendering 2...\n");
+		canvas.Draw(buf, 0, 0);
+		printf("Rendering 5...\n");
+	}
 	void OnUpdate(const float delta) {
 		printf("Updated: %f %f\n", delta, CurTime());
 	}

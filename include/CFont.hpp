@@ -11,27 +11,36 @@ class Font {
 		~Font();
 		
 		//FT_Face GetFace(std::string fontName);
-		//FT_Bitmap GetBitmap(std::string fontName, char32_t ch);
+		//FT_Bitmap GetBitmap(std::string fontName, UnicodeChar ch);
 		
 		bool IsValid();
 		bool SetSize(const unsigned int size);
 		bool LoadFont(std::string fontName);
-		bool LoadCharacter(const char ch);
-		bool LoadCharacter(const char32_t ch);
+		bool LoadCharacter(const UnicodeChar ch);
 		
 		bool GetGlyph(FT_GlyphSlot& glyph);
-		void DrawGlyph(FT_GlyphSlot glyph, unsigned int &x, unsigned int &y, const float sx, const float sy);
+		void DrawGlyph(unsigned int &x, unsigned int &y, const float sx, const float sy);
 		
 		static bool Initialize(std::string vertexFile, std::string fragmentFile);
 		static bool Initialize();
 		static void Release();
+		
+		static bool Exists(std::string name);
+		static Font Get(std::string name);
+		static void Cache(std::string name, Font font);
+		static GLuint uniform_color;
 		
 	private:
 		static FT_Library lib;
 		static GLuint program;
 		static GLuint tex;
 		static GLuint vbo;
-		static std::unordered_map<std::string, FT_Face> cache;
+		
+		static GLuint uniform_tex;
+		static GLuint attribute_coord;
+		
+		static std::unordered_map<std::string, Font> fontCache;
+		static std::unordered_map<std::string, FT_Face> faceCache;
 		
 		bool isValid;
 		FT_Face face;

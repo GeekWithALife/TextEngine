@@ -22,7 +22,9 @@ void Canvas::Scale(const unsigned int sx, const unsigned int sy) {}
 
 // Drawing
 void Canvas::Draw(const TextBuffer buffer, const unsigned int x, const unsigned int y) {
+	printf("Rendering 3...\n");
 	GetBuffer().Put(x, y, buffer);
+	printf("Rendering 4...\n");
 }
 
 // Maintenance
