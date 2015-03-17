@@ -122,7 +122,7 @@ find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # Collect libraries that all programs use together into one cmake variable
-set(COMMON_LIBRARIES ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES} ${M_LIB} -lpthread -mwindows)
+set(COMMON_LIBRARIES ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES} ${M_LIB} -lpthread)
 
 # Create a static library containing all files that we regularly use.
 include_directories("include")

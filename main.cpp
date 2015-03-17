@@ -1,6 +1,5 @@
 #include "include/NEngine.hpp"
 #include "include/CGame.hpp"
-#include <stdio.h>
 
 class MyGame : public Game {
 	void OnStart() {
@@ -26,11 +25,9 @@ class MyGame : public Game {
 };
 
 int main(int argc, char **argv) {
-	//Font::Initialize();
-	//Font x;
-	//x.LoadFont("./fonts/cour.ttf");
 	MyGame *game = new MyGame();
-	if (game->Setup(argc, argv, "My Awesome Game", 512, 512))
+	if (game->Setup(argc, argv, "My Awesome Game", 640, 480))
 		game->Start();
 	delete game;
+	return 0;
 }

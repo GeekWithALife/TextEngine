@@ -194,7 +194,7 @@ static int get_point_size(int cellSize, Font font) {
 void Game::Render() {
 	Canvas c = TheGame->mainCanvas;
 	TheGame->OnRender(c);
-	TextBuffer buf = c.GetBuffer();
+	/*TextBuffer buf = c.GetBuffer();
 	unsigned int width = 0, height = 0;
 	//unsigned int screenWidth = 0, screenHeight = 0;
 	buf.GetSize(width, height);
@@ -204,7 +204,7 @@ void Game::Render() {
 			Character ch = buf.GetCharacter(x, y);
 			int pointSize = get_point_size(cellSize, ch.GetFont());
 		}
-	}
+	}*/
 	// Draw everything
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
