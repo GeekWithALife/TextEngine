@@ -26,7 +26,7 @@ class Canvas {
 		void Clear();
 		void Swap();
 		
-		TextBuffer GetBuffer();
+		TextBuffer& GetBuffer();
 		
 	private:
 		int bufferID;

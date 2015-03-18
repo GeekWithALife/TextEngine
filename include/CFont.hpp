@@ -19,7 +19,7 @@ class Font {
 		bool LoadCharacter(const UnicodeChar ch);
 		
 		bool GetGlyph(FT_GlyphSlot& glyph);
-		void DrawGlyph(unsigned int &x, unsigned int &y, const float sx, const float sy);
+		void DrawGlyph(float &x, float &y, const float sx, const float sy);
 		
 		static bool Initialize(std::string vertexFile, std::string fragmentFile);
 		static bool Initialize();

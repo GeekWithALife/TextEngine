@@ -45,7 +45,7 @@ static GLuint CreateShader(std::string vertexSource, std::string fragmentSource)
 	 
 		//Use the infoLog as you see fit.
 		printf("Failed to compile vertex shader!\n");
-		for (int i = 0; i < infoLog.size(); ++i)
+		for (unsigned int i = 0; i < infoLog.size(); ++i)
 			printf("%c", infoLog[i]);
 		printf("\n");
 	 
@@ -85,6 +85,8 @@ static GLuint CreateShader(std::string vertexSource, std::string fragmentSource)
 	 
 		//Use the infoLog as you see fit.
 		printf("Failed to compile fragment shader!\n");
+		for (unsigned int i = 0; i < infoLog.size(); ++i)
+			printf("%c", infoLog[i]);
 	 
 		//In this simple program, we'll just leave
 		return 0;
@@ -182,6 +184,8 @@ bool Font::Initialize(std::string vertexFile, std::string fragmentFile) {
 		return false;
 	}
 	
+	glUseProgram(Font::program);
+	
 	Font::uniform_tex = glGetUniformLocation(Font::program, "tex");
 	Font::uniform_color = glGetUniformLocation(Font::program, "color");
 	Font::attribute_coord = glGetAttribLocation(Font::program, "coord");
@@ -208,6 +212,8 @@ bool Font::Initialize(std::string vertexFile, std::string fragmentFile) {
 	// To ensure there are no alignment restrictions, we have to use this line:
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
+	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	
 	// We also need to set up a vertex buffer object for our combined vertex and texture coordinates:
 	glGenBuffers(1, &Font::vbo);
 	glEnableVertexAttribArray(Font::attribute_coord);
@@ -222,6 +228,10 @@ bool Font::Initialize() {
 }
 
 void Font::Release() {
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glUseProgram(0);
+	
 	glDeleteBuffers(1, &Font::vbo);
 	glDeleteTextures(1, &Font::tex);
 	// Release FreeType
@@ -254,7 +264,7 @@ bool Font::LoadFont(const std::string name) {
 	if (Font::faceCache.find(name) == Font::faceCache.end()) {
 		//printf("Attempting to init new font: %s\n", name.c_str());
 		int err = 0;
-		if (err = FT_New_Face(Font::lib, name.c_str(), 0, &face)) {
+		if ((err = FT_New_Face(Font::lib, name.c_str(), 0, &face))) {
 			fprintf(stderr, "Error 0x%04x: Could not open font! Is FreeType initialized?\n", err);
 			return false;
 		}
@@ -299,7 +309,7 @@ bool Font::GetGlyph(FT_GlyphSlot& glyph) {
 	return true;
 }
 
-void Font::DrawGlyph(unsigned int &x, unsigned int &y, const float sx, const float sy) {
+void Font::DrawGlyph(float &x, float &y, const float sx, const float sy) {
 	FT_GlyphSlot glyph;
 	if (!GetGlyph(glyph))
 		return;
@@ -319,17 +329,18 @@ void Font::DrawGlyph(unsigned int &x, unsigned int &y, const float sx, const flo
     float y2 = -y - glyph->bitmap_top * sy;
     float w = glyph->bitmap.width * sx;
     float h = glyph->bitmap.rows * sy;
- 
+	
     GLfloat box[4][4] = {
         {x2,     -y2    , 0, 0},
         {x2 + w, -y2    , 1, 0},
         {x2,     -y2 - h, 0, 1},
         {x2 + w, -y2 - h, 1, 1},
     };
- 
+	
     glBufferData(GL_ARRAY_BUFFER, sizeof(box), box, GL_DYNAMIC_DRAW);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
+	printf("x2:%f y2:%f w:%f h:%f x:%f y:%f\n", x2, y2, w, h, x, y);
     x += (glyph->advance.x >> 6) * sx;
     y += (glyph->advance.y >> 6) * sy;
 }

@@ -8,13 +8,15 @@ class MyGame : public Game {
 	void OnTerminate() {
 		printf("Terminating...\n");
 	}
-	void OnRender(Canvas canvas) {
+	void OnRender(Canvas& canvas) {
+		//canvas.Clear();
 		printf("Rendering 1...\n");
-		std::string strVal = "abc\ndef\nghi";
+		std::string strVal = "abc\ndef\nghi\njkl\n";
 		TextBuffer buf(strVal);
 		printf("Rendering 2...\n");
 		canvas.Draw(buf, 0, 0);
-		printf("Rendering 5...\n");
+		printf("Test char: %c\n", canvas.GetBuffer().GetCharacter(1, 0).GetChar());
+		
 	}
 	void OnUpdate(const float delta) {
 		printf("Updated: %f %f\n", delta, CurTime());
@@ -33,7 +35,7 @@ class MyGame : public Game {
 
 int main(int argc, char **argv) {
 	MyGame *game = new MyGame();
-	if (game->Setup(argc, argv, "My Awesome Game", 640, 480))
+	if (game->Setup(argc, argv, "My Awesome Game", 640, 512))
 		game->Start();
 	delete game;
 	return 0;

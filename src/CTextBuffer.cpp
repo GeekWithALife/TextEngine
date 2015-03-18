@@ -24,13 +24,13 @@ void TextBuffer::Put(const unsigned int x0, const unsigned int y0, TextBuffer bu
 		return;
 	unsigned int putWidth, putHeight;
 	buf.GetSize(putWidth, putHeight);
-	unsigned int x1 = x0 + putWidth, y1 = y0 + putHeight;
-	if (x1 > width)
-		x1 = width;
-	if (y1 > height)
-		y1 = height;
-	for (unsigned int y = y0; y < y1; y++) {
-		for (unsigned int x = x0; x < x1; x++) {
+	unsigned int x1 = x0 + putWidth-1, y1 = y0 + putHeight-1;
+	if (x1 >= width)
+		x1 = width-1;
+	if (y1 >= height)
+		y1 = height-1;
+	for (unsigned int y = y0; y <= y1; y++) {
+		for (unsigned int x = x0; x <= x1; x++) {
 			Character ch = buf.GetCharacter(x-x0, y-y0);
 			UnicodeChar code = ch.GetChar();
 			if (code > 0)
@@ -50,7 +50,7 @@ void TextBuffer::Clear(const unsigned int x0, const unsigned int y0, unsigned in
 		y1 = height;
 	for (unsigned int y = y0; y < y1; y++) {
 		for (unsigned int x = x0; x < x1; x++) {
-			Character ch(0);
+			Character ch('a');
 			SetCharacter(x, y, ch);
 		}
 	}
@@ -86,9 +86,9 @@ void TextBuffer::SetSize(const unsigned int width, const unsigned int height) {
 		columns = 0;
 		return;
 	}
-	printf("Resizing width...");
+	printf("Resizing width...\n");
 	buffer.resize(width);
-	printf("Resizing height...");
+	printf("Resizing height...\n");
 	for (unsigned int x = 0; x < width; ++x)
 		buffer[x].resize(height);
 	Clear();
@@ -100,13 +100,14 @@ void TextBuffer::GetSize(unsigned int& width, unsigned int& height) {
 }
 
 void TextBuffer::SetCharacter(const unsigned int x, const unsigned int y, Character ch) {
-	if (x < 1 || y < 1)
+	if (x >= columns || y >= rows)
 		return;
 	buffer[x][y] = ch;
+	printf("Successfully set %d:%d to %c\n", x, y, buffer[x][y].GetChar());
 }
 Character TextBuffer::GetCharacter(const unsigned int x, const unsigned int y) {
 	Character nul (0);
-	if (x < 1 || y < 1 || x >= columns || y >= rows)
+	if (x >= columns || y >= rows)
 		return nul;
 	return buffer[x][y];
 }
@@ -116,9 +117,10 @@ void TextBuffer::GetLines(const UnicodeString str, const UnicodeString delimiter
 	unsigned int longestLine = 0;
 	size_t position = 0;
 	size_t positionPrev = 0;
+	lines.clear();
 	while((position = str.find(delimiter, positionPrev)) != UnicodeString::npos) {
 		printf("Found delimiter [%s] at %d\n", delimiter.c_str(), position);
-		UnicodeString newLine = str.substr(positionPrev, position);
+		UnicodeString newLine = str.substr(positionPrev, position-positionPrev);
 		if (newLine.length() > longestLine)
 			longestLine = newLine.length();
 		lines.push_back(newLine);
@@ -137,7 +139,7 @@ void TextBuffer::InitFromString(const UnicodeString str, const UnicodeString del
 	printf("Resizing...\n");
 	SetSize(width, height);
 	printf("Assigning...\n");
-	SetRange(0, 0, width, height, str, TextEngine_NAMESPACE::DefaultDelimiter);
+	SetRange(0, 0, width-1, height-1, str, TextEngine_NAMESPACE::DefaultDelimiter);
 	printf("Done!\n");
 }
 void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1, std::vector<UnicodeString> lines) {
@@ -145,11 +147,13 @@ void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const un
 	GetSize(width, height);
 	if (x1 >= width || y1 >= height)
 		return;	
-	for (unsigned int y = y0; y < y1; y++) {
-		for (unsigned int x = x0; x < x1; x++) {
+	for (unsigned int y = y0; y <= y1; y++) {
+		for (unsigned int x = x0; x <= x1; x++) {
+			printf("Attempting to insert %c at %d:%d\n", lines[y-y0][x-x0], x, y);
 			UnicodeChar value = 0;
-			if (x-x0 < lines[y-y0].size())
+			if (x-x0 <= lines[y-y0].size())
 				value = lines[y-y0][x-x0];
+			printf("\tInserting %c\n", value);
 			Character ch(value);
 			SetCharacter(x, y, ch);
 		}

@@ -16,7 +16,7 @@ Game::~Game() {
 }
 void Game::OnStart() { }
 void Game::OnTerminate() { }
-void Game::OnRender(Canvas canvas) { }
+void Game::OnRender(Canvas& canvas) { }
 void Game::OnUpdate(const float delta) { }
 void Game::OnKeyDown(char key) { }
 void Game::OnKeyUp(char key) { }
@@ -78,7 +78,7 @@ bool Game::Setup(int argc, char **argv, std::string title, unsigned int scrWidth
 	printf("Initializing Canvas...\n");
 	
 	// Must be called after Font::Initialize.
-	mainCanvas.SetSize(screenWidth, screenHeight);
+	mainCanvas.SetSize(screenWidth/64, screenHeight/64);
 	
 	printf("Setup complete!\n");
 	
@@ -94,60 +94,58 @@ void Game::Terminate() {
 	glutLeaveMainLoop();
 }
 
-// Calculates font size needed for a character using font fontName to fill a space of size cellSize.
-static int get_point_size(int cellSize, Font font) {
-	return 12;
-}
 void Game::Render() {
-	Canvas c = TheGame->mainCanvas;
-	TheGame->OnRender(c);
+	Canvas canvas = mainCanvas;
+	OnRender(canvas);
+	printf("Test char: %c\n", canvas.GetBuffer().GetCharacter(1, 0).GetChar());
+	
 	// Draw everything
-	glClearColor(1, 1, 1, 1);
+	glClearColor(0, 0, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	TextBuffer buf = c.GetBuffer();
+	TextBuffer buf = canvas.GetBuffer();
 	unsigned int width = 0, height = 0;
 	//unsigned int screenWidth = 0, screenHeight = 0;
 	buf.GetSize(width, height);
-	float sx = 2.0 / glutGet(GLUT_WINDOW_WIDTH);
-	float sy = 2.0 / glutGet(GLUT_WINDOW_HEIGHT);
-	unsigned int x = 0, y = 0;
-	printf("Drawing...");
+	float sx = 1;//2.0 / glutGet(GLUT_WINDOW_WIDTH);
+	float sy = 1;//2.0 / glutGet(GLUT_WINDOW_HEIGHT);
+	float x = 10, y = 10;
+	printf("Drawing...\n");
 	for (unsigned int row = 0; row < height; row++) {
 		for (unsigned int col = 0; col < width; col++) {
 			Character ch = buf.GetCharacter(col, row);
+			printf("\tDrawing char %d:%d %c\n", col, row, ch.GetChar());
 			if (ch.GetChar() == 0)
 				continue;
 			Font f = ch.GetFont();
-			f.SetSize(12);
+			f.SetSize(64);
 			f.LoadCharacter(ch.GetChar());
-			float color[4] = {0};
-			ch.GetColor(color);
+			float color[4] = {1, 0, 0, 1};
+			//ch.GetColor(color);
 			glUniform4fv(Font::uniform_color, 1, color);
 			f.DrawGlyph(x, y, sx, sy);
 		}
 		x = 0;
 		y = 0;
 	}
-	
     glutSwapBuffers();
     glutPostRedisplay();
 }
 void Game::Update() {
 	float delta = (CurTime() - timeLastFrame);
-	TheGame->OnUpdate(delta);
+	OnUpdate(delta);
 	timeLastFrame = CurTime();
 }
 void Game::Keyboard(unsigned char key) {
 	static char pressed[255] = { 0 };
 	pressed[key] = !pressed[key];
 	if (pressed[key])
-		TheGame->OnKeyDown(key);
+		OnKeyDown(key);
 	else
-		TheGame->OnKeyUp(key);
+		OnKeyUp(key);
 }
 
 // Callbacks

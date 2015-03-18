@@ -13,7 +13,7 @@ class Game {
 		// Callbacks
 		virtual void OnStart();
 		virtual void OnTerminate();
-		virtual void OnRender(Canvas canvas);
+		virtual void OnRender(Canvas& canvas);
 		virtual void OnUpdate(const float delta);
 		virtual void OnKeyDown(char key);
 		virtual void OnKeyUp(char key);
