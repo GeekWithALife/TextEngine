@@ -126,7 +126,7 @@ set(COMMON_LIBRARIES ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${F
 
 # Create a static library containing all files that we regularly use.
 include_directories("include")
-set(FILES_IN_ENGINE src/CFont.cpp src/CCharacter.cpp src/CTextBuffer.cpp src/CCanvas.cpp src/CGame.cpp)
+set(FILES_IN_ENGINE src/SFont.cpp src/CCharacter.cpp src/CTextBuffer.cpp src/CCanvas.cpp src/CGame.cpp)
 add_library(TextEngine STATIC ${FILES_IN_ENGINE})
 set_target_properties(TextEngine PROPERTIES COMPILE_DEFINITIONS "${PREPROC_DEFINE}")
 

@@ -1,4 +1,5 @@
 #include "../include/CGame.hpp"
+#include "SFont.hpp"
 
 static Game *TheGame = NULL;
 
@@ -46,9 +47,10 @@ bool Game::Setup(int argc, char **argv, std::string title, unsigned int scrWidth
 	
 	// Initialize GLUT
 	glutInit(&argc, argv);
+	glutInitContextVersion(2,0);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 	// Ask GLUT to for a double buffered, full color window without a depth buffer
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_DEPTH);
 	glutInitWindowSize(screenWidth, screenHeight);
 	glutCreateWindow(title.c_str()); // set window title to executable name
 	
@@ -97,40 +99,49 @@ void Game::Terminate() {
 void Game::Render() {
 	Canvas canvas = mainCanvas;
 	OnRender(canvas);
-	printf("Test char: %c\n", canvas.GetBuffer().GetCharacter(1, 0).GetChar());
 	
 	// Draw everything
-	glClearColor(0, 0, 1, 1);
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	float sx = 2.0 / glutGet(GLUT_WINDOW_WIDTH);
+	float sy = 2.0 / glutGet(GLUT_WINDOW_HEIGHT);
 	
-	TextBuffer buf = canvas.GetBuffer();
+	Font::StartRender();
+	Font::Render("The Quick Brown Fox Jumps Over The Lazy Dog", -1 + 8 * sx, 1 - 50 * sy, sx, sy);
+	Font::Render("The Misaligned Fox Jumps Over The Lazy Dog", -1 + 8.5 * sx, 1 - 100.5 * sy, sx, sy);
+	Font::StopRender();
+	/*TextBuffer buf = canvas.GetBuffer();
 	unsigned int width = 0, height = 0;
 	//unsigned int screenWidth = 0, screenHeight = 0;
 	buf.GetSize(width, height);
-	float sx = 1;//2.0 / glutGet(GLUT_WINDOW_WIDTH);
-	float sy = 1;//2.0 / glutGet(GLUT_WINDOW_HEIGHT);
-	float x = 10, y = 10;
-	printf("Drawing...\n");
+	float x = 0, y = 0;
+	//printf("Drawing...\n");
+	Font f;
+	if (f.IsValid()) {
+		f.Render("The Quick Brown Fox Jumps Over The Lazy Dog", -1 + 8 * sx, 1 - 50 * sy, sx, sy);
+		f.Render("The Misaligned Fox Jumps Over The Lazy Dog", -1 + 8.5 * sx, 1 - 100.5 * sy, sx, sy);
+	} else {
+		printf("Failed to render with default font!\n");
+	}
 	for (unsigned int row = 0; row < height; row++) {
+		x = -1 + 8 * sx;
+		y = 1 - 50 * sy;
 		for (unsigned int col = 0; col < width; col++) {
 			Character ch = buf.GetCharacter(col, row);
-			printf("\tDrawing char %d:%d %c\n", col, row, ch.GetChar());
 			if (ch.GetChar() == 0)
 				continue;
 			Font f = ch.GetFont();
-			f.SetSize(64);
-			f.LoadCharacter(ch.GetChar());
-			float color[4] = {1, 0, 0, 1};
+			if (!f.SetSize(48))
+				continue;
+			if (!f.LoadCharacter(ch.GetChar()))
+				continue;
+			printf("Drawing char %d:%d %c\n", col, row, ch.GetChar());
 			//ch.GetColor(color);
-			glUniform4fv(Font::uniform_color, 1, color);
-			f.DrawGlyph(x, y, sx, sy);
 		}
 		x = 0;
 		y = 0;
-	}
+	}*/
     glutSwapBuffers();
     glutPostRedisplay();
 }

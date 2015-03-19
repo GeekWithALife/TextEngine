@@ -3,12 +3,12 @@
 Character::Character(UnicodeChar code) {
 	SetColor(0, 0, 0, 255);
 	SetChar(code);
-	SetFont(TextEngine_NAMESPACE::DefaultFont);
+	//SetFont(TextEngine_NAMESPACE::DefaultFont);
 }
 Character::Character() {
 	SetColor(0, 0, 0, 255);
 	SetChar(0);
-	SetFont(TextEngine_NAMESPACE::DefaultFont);
+	//SetFont(TextEngine_NAMESPACE::DefaultFont);
 }
 
 Character::~Character() {}
@@ -24,7 +24,7 @@ UnicodeChar Character::GetChar() {
 	return codePoint;
 }
 
-void Character::SetFont(std::string font) {
+/*void Character::SetFont(std::string font) {
 	if (Font::Exists(font))
 		fontRef = Font::Get(font);
 	else
@@ -32,7 +32,7 @@ void Character::SetFont(std::string font) {
 }
 Font Character::GetFont() {
 	return fontRef;
-}
+}*/
 
 void Character::SetColor(char r, char g, char b, char a) {
 	fgColor[0] = r;

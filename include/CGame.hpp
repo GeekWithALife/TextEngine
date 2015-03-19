@@ -3,7 +3,6 @@
 
 #include "NEngine.hpp"
 #include "CCanvas.hpp"
-#include "CFont.hpp"
 
 class Game {
 	public:

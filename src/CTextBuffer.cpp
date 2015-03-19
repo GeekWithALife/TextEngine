@@ -86,9 +86,9 @@ void TextBuffer::SetSize(const unsigned int width, const unsigned int height) {
 		columns = 0;
 		return;
 	}
-	printf("Resizing width...\n");
+	//printf("Resizing width...\n");
 	buffer.resize(width);
-	printf("Resizing height...\n");
+	//printf("Resizing height...\n");
 	for (unsigned int x = 0; x < width; ++x)
 		buffer[x].resize(height);
 	Clear();
@@ -103,7 +103,7 @@ void TextBuffer::SetCharacter(const unsigned int x, const unsigned int y, Charac
 	if (x >= columns || y >= rows)
 		return;
 	buffer[x][y] = ch;
-	printf("Successfully set %d:%d to %c\n", x, y, buffer[x][y].GetChar());
+	//printf("Successfully set %d:%d to %c\n", x, y, buffer[x][y].GetChar());
 }
 Character TextBuffer::GetCharacter(const unsigned int x, const unsigned int y) {
 	Character nul (0);
@@ -119,28 +119,28 @@ void TextBuffer::GetLines(const UnicodeString str, const UnicodeString delimiter
 	size_t positionPrev = 0;
 	lines.clear();
 	while((position = str.find(delimiter, positionPrev)) != UnicodeString::npos) {
-		printf("Found delimiter [%s] at %d\n", delimiter.c_str(), position);
+		//printf("Found delimiter [%s] at %d\n", delimiter.c_str(), position);
 		UnicodeString newLine = str.substr(positionPrev, position-positionPrev);
 		if (newLine.length() > longestLine)
 			longestLine = newLine.length();
 		lines.push_back(newLine);
-		printf("Adding line [%s]\n", newLine.c_str());
+		//printf("Adding line [%s]\n", newLine.c_str());
 		positionPrev = position+1;
 	}
 	width = longestLine;
 	height = lines.size();
 }
 void TextBuffer::InitFromString(const UnicodeString str, const UnicodeString delimiter) {
-	printf("Initializing from string [%s]\n", str.c_str());
+	//printf("Initializing from string [%s]\n", str.c_str());
 	std::vector<UnicodeString> lines;
 	unsigned int width, height;
-	printf("Getting lines...\n");
+	//printf("Getting lines...\n");
 	GetLines(str, delimiter, lines, width, height);
-	printf("Resizing...\n");
+	//printf("Resizing...\n");
 	SetSize(width, height);
-	printf("Assigning...\n");
+	//printf("Assigning...\n");
 	SetRange(0, 0, width-1, height-1, str, TextEngine_NAMESPACE::DefaultDelimiter);
-	printf("Done!\n");
+	//printf("Done!\n");
 }
 void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1, std::vector<UnicodeString> lines) {
 	unsigned int width, height;
@@ -149,11 +149,11 @@ void TextBuffer::SetRange(const unsigned int x0, const unsigned int y0, const un
 		return;	
 	for (unsigned int y = y0; y <= y1; y++) {
 		for (unsigned int x = x0; x <= x1; x++) {
-			printf("Attempting to insert %c at %d:%d\n", lines[y-y0][x-x0], x, y);
+			//printf("Attempting to insert %c at %d:%d\n", lines[y-y0][x-x0], x, y);
 			UnicodeChar value = 0;
 			if (x-x0 <= lines[y-y0].size())
 				value = lines[y-y0][x-x0];
-			printf("\tInserting %c\n", value);
+			//printf("\tInserting %c\n", value);
 			Character ch(value);
 			SetCharacter(x, y, ch);
 		}

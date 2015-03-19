@@ -22,13 +22,13 @@ void Canvas::Scale(const unsigned int sx, const unsigned int sy) {}
 
 // Drawing
 void Canvas::Draw(const TextBuffer buffer, const unsigned int x, const unsigned int y) {
-	printf("Rendering to buffer %d...\n", bufferID);
+	//printf("Rendering to buffer %d...\n", bufferID);
 	GetBuffer().Put(x, y, buffer);
 }
 
 // Maintenance
 void Canvas::Clear() {
-	printf("Clearing buffer %d...\n", bufferID);
+	//printf("Clearing buffer %d...\n", bufferID);
 	GetBuffer().Clear();
 }
 void Canvas::Swap() {
@@ -45,7 +45,7 @@ void Canvas::Swap() {
 }
 
 TextBuffer& Canvas::GetBuffer() {
-	printf("Giving buffer %d...\n", bufferID);
+	//printf("Giving buffer %d...\n", bufferID);
 	return buffers[bufferID];
 }
 

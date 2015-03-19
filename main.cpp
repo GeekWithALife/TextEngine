@@ -1,25 +1,33 @@
 #include "include/NEngine.hpp"
 #include "include/CGame.hpp"
+#include "SFont.hpp"
 
 class MyGame : public Game {
 	void OnStart() {
 		printf("Starting...\n");
+		float color[4] = {0, 0, 0, 1};
+		Font::SetColor(color);
+		std::string family, style;
+		if (!Font::LoadFace(TextEngine_NAMESPACE::DefaultFont, family, style))
+			printf("Failed to load face.\n");
+		else
+			if (!Font::SetFace(family, style, 48))
+				printf("Failed to set face.\n");
+			else
+				printf("We have font!\n");
 	}
 	void OnTerminate() {
 		printf("Terminating...\n");
 	}
 	void OnRender(Canvas& canvas) {
 		//canvas.Clear();
-		printf("Rendering 1...\n");
 		std::string strVal = "abc\ndef\nghi\njkl\n";
 		TextBuffer buf(strVal);
-		printf("Rendering 2...\n");
 		canvas.Draw(buf, 0, 0);
-		printf("Test char: %c\n", canvas.GetBuffer().GetCharacter(1, 0).GetChar());
 		
 	}
 	void OnUpdate(const float delta) {
-		printf("Updated: %f %f\n", delta, CurTime());
+		//printf("Updated: %f %f\n", delta, CurTime());
 	}
 	void OnKeyDown(char key) {
 		printf("Pressed %c\n", key);
