@@ -80,7 +80,7 @@ bool Game::Setup(int argc, char **argv, std::string title, unsigned int scrWidth
 	printf("Initializing Canvas...\n");
 	
 	// Must be called after Font::Initialize.
-	mainCanvas.SetSize(screenWidth/64, screenHeight/64);
+	mainCanvas.SetSize(screenWidth/40, screenHeight/64);
 	
 	printf("Setup complete!\n");
 	
@@ -101,47 +101,25 @@ void Game::Render() {
 	OnRender(canvas);
 	
 	// Draw everything
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
 	float sx = 2.0 / glutGet(GLUT_WINDOW_WIDTH);
 	float sy = 2.0 / glutGet(GLUT_WINDOW_HEIGHT);
 	
 	Font::StartRender();
-	Font::Render("The Quick Brown Fox Jumps Over The Lazy Dog", -1 + 8 * sx, 1 - 50 * sy, sx, sy);
-	Font::Render("The Misaligned Fox Jumps Over The Lazy Dog", -1 + 8.5 * sx, 1 - 100.5 * sy, sx, sy);
-	Font::StopRender();
-	/*TextBuffer buf = canvas.GetBuffer();
+	TextBuffer buf = canvas.GetBuffer();
 	unsigned int width = 0, height = 0;
-	//unsigned int screenWidth = 0, screenHeight = 0;
 	buf.GetSize(width, height);
-	float x = 0, y = 0;
-	//printf("Drawing...\n");
-	Font f;
-	if (f.IsValid()) {
-		f.Render("The Quick Brown Fox Jumps Over The Lazy Dog", -1 + 8 * sx, 1 - 50 * sy, sx, sy);
-		f.Render("The Misaligned Fox Jumps Over The Lazy Dog", -1 + 8.5 * sx, 1 - 100.5 * sy, sx, sy);
-	} else {
-		printf("Failed to render with default font!\n");
-	}
+	float x = 8, y = 50;
 	for (unsigned int row = 0; row < height; row++) {
-		x = -1 + 8 * sx;
-		y = 1 - 50 * sy;
-		for (unsigned int col = 0; col < width; col++) {
-			Character ch = buf.GetCharacter(col, row);
-			if (ch.GetChar() == 0)
-				continue;
-			Font f = ch.GetFont();
-			if (!f.SetSize(48))
-				continue;
-			if (!f.LoadCharacter(ch.GetChar()))
-				continue;
-			printf("Drawing char %d:%d %c\n", col, row, ch.GetChar());
+		std::string line = buf.GetLine(row);
+		Font::Render(line.c_str(), -1 + x * sx, 1 - y * sy, sx, sy);
+		//for (unsigned int col = 0; col < width; col++) {
+		//	printf("Drawing char %d:%d %c\n", col, row, ch.GetChar());
 			//ch.GetColor(color);
-		}
-		x = 0;
-		y = 0;
-	}*/
+		//}
+		y += Font::curPointSize;
+	}
+	Font::StopRender();
+	
     glutSwapBuffers();
     glutPostRedisplay();
 }

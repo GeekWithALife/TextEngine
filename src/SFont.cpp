@@ -179,7 +179,8 @@ static GLuint CreateShader(std::string vertexSource, std::string fragmentSource)
 // State
 FT_Library Font::lib;
 FT_Face Font::curFace;
-float Font::curColor[4] = {0, 0, 0, 1};
+float Font::curColor[4] = {1, 1, 1, 1};
+float Font::curColorBG[4] = {0, 0, 0, 1};
 unsigned int Font::curPointSize = 12;
 
 // Cache - fontCache[familyName][styleName] = face;
@@ -310,9 +311,16 @@ bool Font::SetColor(float color[4]) {
 		Font::curColor[i] = color[i];
 	return true;
 }
+bool Font::SetColorBG(float color[4]) {
+	for (unsigned int i = 0; i < 4; i++)
+		Font::curColorBG[i] = color[i];
+	return true;
+}
 
 // Rendering
 void Font::StartRender() {
+	glClearColor(Font::curColorBG[0], Font::curColorBG[1], Font::curColorBG[2], Font::curColorBG[3]);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(Font::program);
 	printOpenGLError();
 	glEnable(GL_BLEND);

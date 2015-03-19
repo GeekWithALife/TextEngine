@@ -16,6 +16,7 @@ class Font {
 		static bool LoadFace(std::string fileName, std::string& familyName, std::string& styleName);
 		static bool SetFace(std::string familyName, std::string styleName, unsigned int pointSize);
 		static bool SetColor(float color[4]);
+		static bool SetColorBG(float color[4]);
 		
 		// Rendering
 		static void StartRender();
@@ -26,6 +27,7 @@ class Font {
 		static FT_Library lib;
 		static FT_Face curFace;
 		static float curColor[4];
+		static float curColorBG[4];
 		static unsigned int curPointSize;
 		
 		// Cache - fontCache[familyName][styleName] = face;

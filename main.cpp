@@ -5,13 +5,15 @@
 class MyGame : public Game {
 	void OnStart() {
 		printf("Starting...\n");
-		float color[4] = {0, 0, 0, 1};
+		float color[4] = {1, 1, 1, 1};
 		Font::SetColor(color);
+		float colorBG[4] = {0, 0, 0, 1};
+		Font::SetColorBG(colorBG);
 		std::string family, style;
 		if (!Font::LoadFace(TextEngine_NAMESPACE::DefaultFont, family, style))
 			printf("Failed to load face.\n");
 		else
-			if (!Font::SetFace(family, style, 48))
+			if (!Font::SetFace(family, style, 64))
 				printf("Failed to set face.\n");
 			else
 				printf("We have font!\n");

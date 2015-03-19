@@ -23,6 +23,7 @@ class TextBuffer {
 		
 		void SetCharacter(const unsigned int x, const unsigned int y, Character ch);
 		Character GetCharacter(const unsigned int x, const unsigned int y);
+		std::string GetLine(const unsigned int row);
 		
 		void Clear(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1);
 		void Clear();

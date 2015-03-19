@@ -87,10 +87,10 @@ void TextBuffer::SetSize(const unsigned int width, const unsigned int height) {
 		return;
 	}
 	//printf("Resizing width...\n");
-	buffer.resize(width);
+	buffer.resize(height);
 	//printf("Resizing height...\n");
-	for (unsigned int x = 0; x < width; ++x)
-		buffer[x].resize(height);
+	for (unsigned int y = 0; y < height; ++y)
+		buffer[y].resize(width);
 	Clear();
 }
 
@@ -102,14 +102,22 @@ void TextBuffer::GetSize(unsigned int& width, unsigned int& height) {
 void TextBuffer::SetCharacter(const unsigned int x, const unsigned int y, Character ch) {
 	if (x >= columns || y >= rows)
 		return;
-	buffer[x][y] = ch;
+	buffer[y][x] = ch;
 	//printf("Successfully set %d:%d to %c\n", x, y, buffer[x][y].GetChar());
 }
 Character TextBuffer::GetCharacter(const unsigned int x, const unsigned int y) {
 	Character nul (0);
 	if (x >= columns || y >= rows)
 		return nul;
-	return buffer[x][y];
+	return buffer[y][x];
+}
+std::string TextBuffer::GetLine(const unsigned int row) {
+	std::string str = "";
+	for (unsigned int i = 0; i < buffer[row].size(); ++i) {
+		char ch = buffer[row][i].GetChar();
+		str.append(1, ch);
+	}
+	return str;
 }
 
 // Private methods
