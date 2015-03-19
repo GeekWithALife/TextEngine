@@ -3,11 +3,17 @@
 
 #include "NEngine.hpp"
 #include "CCanvas.hpp"
+#include <unordered_map>
 
 class Game {
 	public:
 		Game();
 		virtual ~Game();
+		
+		// Internal callers
+		void Render();
+		void Update();
+		void Keyboard(unsigned char key, bool state);
 		
 		// Callbacks
 		virtual void OnStart();
@@ -19,6 +25,10 @@ class Game {
 		virtual void OnMouseDown(char button, unsigned int x, unsigned int y);
 		virtual void OnMouseUp(char button, unsigned int x, unsigned int y);
 		
+		// Logic Utils
+		bool IsKeyDown(unsigned char key);
+		float CurTime();
+		
 		// Properties
 		//void SetTitle(std::u32string title);
 		//void SetResolution(unsigned int width, unsigned int height);
@@ -29,11 +39,6 @@ class Game {
 		void Terminate();
 		void Destroy();
 		
-		void Render();
-		void Update();
-		void Keyboard(unsigned char key);
-		float CurTime();
-		
 	private:
 		Canvas mainCanvas;
 		bool shouldTerminate;
@@ -43,5 +48,9 @@ class Game {
 		float timeSinceLastFrame;
 		float timeStepConstant;
 		float timeStepMin;
+		
+		float offsetX;
+		float offsetY;
+		std::unordered_map<char, bool> keyState;
 };
 #endif

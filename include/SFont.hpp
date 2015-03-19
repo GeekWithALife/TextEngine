@@ -18,8 +18,11 @@ class Font {
 		static bool SetColor(float color[4]);
 		static bool SetColorBG(float color[4]);
 		
+		static bool GetCharDimensions(const char ch, unsigned int& width, unsigned int& height);
+		
 		// Rendering
 		static void StartRender();
+		static void Render(const char ch, float &x, float &y, float sx, float sy);
 		static void Render(const char *text, float x, float y, float sx, float sy);
 		static void StopRender();
 		

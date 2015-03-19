@@ -317,6 +317,15 @@ bool Font::SetColorBG(float color[4]) {
 	return true;
 }
 
+bool Font::GetCharDimensions(const char ch, unsigned int& width, unsigned int& height) {	
+	FT_GlyphSlot g = Font::curFace->glyph;
+	if(FT_Load_Char(Font::curFace, ch, FT_LOAD_RENDER))
+		return false;
+	width = (g->advance.x >> 6);
+	height = g->bitmap.rows;
+	return true;
+}
+
 // Rendering
 void Font::StartRender() {
 	glClearColor(Font::curColorBG[0], Font::curColorBG[1], Font::curColorBG[2], Font::curColorBG[3]);
@@ -329,45 +338,51 @@ void Font::StartRender() {
 	printOpenGLError();
 	glUniform4fv(Font::uniform_color, 1, Font::curColor);
 }
-void Font::Render(const char *text, float x, float y, float sx, float sy) {
+void Font::Render(const char ch, float &x, float &y, float sx, float sy) {
 	FT_GlyphSlot g = Font::curFace->glyph;
+	if(FT_Load_Char(Font::curFace, ch, FT_LOAD_RENDER))
+		return;
+
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RED,
+		g->bitmap.width,
+		g->bitmap.rows,
+		0,
+		GL_RED,
+		GL_UNSIGNED_BYTE,
+		g->bitmap.buffer
+	);
+	printOpenGLError();
+
+	float x2 = x + g->bitmap_left * sx;
+	float y2 = -y - g->bitmap_top * sy;
+	float w = g->bitmap.width * sx;
+	float h = g->bitmap.rows * sy;
+	
+	int advanceW = (g->advance.x >> 6);
+	x2 += ((Font::curPointSize - advanceW)/2.0) * sx;
+	
+	GLfloat box[4][4] = {
+		{x2,     -y2    , 0, 0},
+		{x2 + w, -y2    , 1, 0},
+		{x2,     -y2 - h, 0, 1},
+		{x2 + w, -y2 - h, 1, 1},
+	};
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
+	printOpenGLError();
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	printOpenGLError();
+	
+	x += Font::curPointSize * sx;
+	y += (g->advance.y >> 6) * sy;
+}
+void Font::Render(const char *text, float x, float y, float sx, float sy) {
 	const char *p;
 	for(p = text; *p; p++) {
-		if(FT_Load_Char(Font::curFace, *p, FT_LOAD_RENDER))
-			continue;
-	
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_RED,
-			g->bitmap.width,
-			g->bitmap.rows,
-			0,
-			GL_RED,
-			GL_UNSIGNED_BYTE,
-			g->bitmap.buffer
-		);
-		printOpenGLError();
-	
-		float x2 = x + g->bitmap_left * sx;
-		float y2 = -y - g->bitmap_top * sy;
-		float w = g->bitmap.width * sx;
-		float h = g->bitmap.rows * sy;
-	
-		GLfloat box[4][4] = {
-			{x2,     -y2    , 0, 0},
-			{x2 + w, -y2    , 1, 0},
-			{x2,     -y2 - h, 0, 1},
-			{x2 + w, -y2 - h, 1, 1},
-		};
-	
-		glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
-		printOpenGLError();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		printOpenGLError();
-	
-		x += (g->advance.x >> 6) * sx;
-		y += (g->advance.y >> 6) * sy;
+		Font::Render(*p, x, y, sx, sy);
 	}
 }
 void Font::StopRender() {}

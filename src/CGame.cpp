@@ -1,5 +1,6 @@
 #include "../include/CGame.hpp"
 #include "SFont.hpp"
+#include <ctype.h>
 
 static Game *TheGame = NULL;
 
@@ -9,6 +10,8 @@ Game::Game() {
 	timeSinceLastFrame = 0.00001;
 	timeStepConstant = 0.1;
 	timeStepMin = 0.01;
+	offsetX = 0;
+	offsetY = 0;
 	TheGame = this;
 }
 Game::~Game() {
@@ -30,8 +33,11 @@ static void render() {
 static void update() {
 	TheGame->Update();
 }
-static void keyboard(unsigned char key, int x, int y) {
-	TheGame->Keyboard(key);
+static void keyboarddown(unsigned char key, int x, int y) {
+	TheGame->Keyboard(key, true);
+}
+static void keyboardup(unsigned char key, int x, int y) {
+	TheGame->Keyboard(key, false);
 }
 
 float Game::CurTime() {
@@ -47,7 +53,7 @@ bool Game::Setup(int argc, char **argv, std::string title, unsigned int scrWidth
 	
 	// Initialize GLUT
 	glutInit(&argc, argv);
-	glutInitContextVersion(2,0);
+	//glutInitContextVersion(2,0);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 	// Ask GLUT to for a double buffered, full color window without a depth buffer
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_DEPTH);
@@ -63,12 +69,22 @@ bool Game::Setup(int argc, char **argv, std::string title, unsigned int scrWidth
 		return false;
 	}
 	
+	
+	printf("Initializing State...\n");
+	
+	// Initialize key state
+	for (int i = 0; i < 256; i++) {
+		char ch = i;
+		printf("Setting %c\n", ch);
+		keyState[ch] = false;
+	}
 	printf("Adding callbacks...\n");
 	
 	// Add event listeners
 	glutIdleFunc(update);
 	glutDisplayFunc(render);
-	glutKeyboardFunc(keyboard);
+	glutKeyboardFunc(keyboarddown);
+	glutKeyboardUpFunc(keyboardup);
 	
 	printf("Initializing FreeType...\n");
 	
@@ -77,17 +93,29 @@ bool Game::Setup(int argc, char **argv, std::string title, unsigned int scrWidth
 		return false;
 	}
 	
-	printf("Initializing Canvas...\n");
-	
-	// Must be called after Font::Initialize.
-	mainCanvas.SetSize(screenWidth/40, screenHeight/64);
-	
-	printf("Setup complete!\n");
-	
 	return true;
 }
 void Game::Start() {
 	OnStart();
+	
+	printf("Initializing Canvas...\n");
+	
+	// Must be called after Font::Initialize.
+	//unsigned int w, h;
+	//Font::GetCharDimensions('j', w, h);
+	//printf("Char size: %d %d\n", w, h);
+	int cols = screenWidth/Font::curPointSize;
+	int rows = screenHeight/Font::curPointSize;
+	mainCanvas.SetSize(cols, rows);
+	
+	int trueWidth = cols * Font::curPointSize;
+	int trueHeight = rows * Font::curPointSize;
+	
+	offsetX = (screenWidth - trueWidth) / 2.0;
+	offsetY = (screenHeight - trueHeight) / 2.0;
+	
+	printf("Setup complete!\n");
+	
 	timeLastFrame = CurTime();
 	glutMainLoop();
 	OnTerminate();
@@ -108,7 +136,12 @@ void Game::Render() {
 	TextBuffer buf = canvas.GetBuffer();
 	unsigned int width = 0, height = 0;
 	buf.GetSize(width, height);
-	float x = 8, y = 50;
+	unsigned int w = 0, h = 0;
+	float x = offsetX, y = offsetY + Font::curPointSize;
+	/*if (Font::GetCharDimensions('j', w, h)) {
+		x = w/2.0;
+		y = h/2.0;
+	}*/
 	for (unsigned int row = 0; row < height; row++) {
 		std::string line = buf.GetLine(row);
 		Font::Render(line.c_str(), -1 + x * sx, 1 - y * sy, sx, sy);
@@ -128,10 +161,17 @@ void Game::Update() {
 	OnUpdate(delta);
 	timeLastFrame = CurTime();
 }
-void Game::Keyboard(unsigned char key) {
-	static char pressed[255] = { 0 };
-	pressed[key] = !pressed[key];
-	if (pressed[key])
+bool Game::IsKeyDown(unsigned char key) {
+	key = tolower(key);
+	return keyState[key];
+}
+// TODO: Learn the keyboard callback behavior on different systems. It's apparently window system dependent.
+void Game::Keyboard(unsigned char key, bool state) {
+	key = tolower(key);
+	if (keyState[key] == state)
+		return;
+	keyState[key] = state;
+	if (keyState[key])
 		OnKeyDown(key);
 	else
 		OnKeyUp(key);

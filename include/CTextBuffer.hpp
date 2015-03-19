@@ -28,7 +28,7 @@ class TextBuffer {
 		void Clear(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1);
 		void Clear();
 		
-		void Put(const unsigned int x0, const unsigned int y0, TextBuffer buf);
+		void Put(int x0, int y0, TextBuffer buf);
 		
 		void SetRange(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1, const UnicodeString str, const UnicodeString delimiter);
 		void SetRange(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1, const UnicodeString str);

@@ -17,20 +17,49 @@ TextBuffer::TextBuffer(const UnicodeString str) {
 TextBuffer::~TextBuffer() {
 }
 
-void TextBuffer::Put(const unsigned int x0, const unsigned int y0, TextBuffer buf) {
+void TextBuffer::Put(int x0, int y0, TextBuffer buf) {
 	unsigned int width, height;
 	GetSize(width, height);
+	
+	// If the top left corner is out of positive bounds, the whole thing is.
 	if (x0 >= width || y0 >= height)
 		return;
+	
+	// Get the size of the source buffer
 	unsigned int putWidth, putHeight;
 	buf.GetSize(putWidth, putHeight);
-	unsigned int x1 = x0 + putWidth-1, y1 = y0 + putHeight-1;
-	if (x1 >= width)
-		x1 = width-1;
-	if (y1 >= height)
-		y1 = height-1;
-	for (unsigned int y = y0; y <= y1; y++) {
-		for (unsigned int x = x0; x <= x1; x++) {
+	
+	// x1/y1 represent the start point in the dest buffer.
+	int x1 = x0;
+	int y1 = y0;
+	
+	// Calculate the stopping point in the dest buffer.
+	int x2 = x0 + putWidth-1;
+	int y2 = y0 + putHeight-1;
+	
+	// If the bottom right corner is out of negative bounds, the whole thing is.
+	if (x2 < 0 || y2 < 0)
+		return;
+	
+	// If x0 or y0 is negative, set them to start inside the source buffer, and at 0 in dest buffer.
+	if (x1 < 0) {
+		x0 = -x0;
+		x1 = 0;
+	}
+	if (y1 < 0) {
+		y0 = -y0;
+		y1 = 0;
+	}
+	
+	// If x2 or y2 exceeds the dest buffer size, set them to end inside the dest buffer.
+	if (x2 >= width)
+		x2 = width-1;
+	if (y2 >= height)
+		y2 = height-1;
+	
+	// Iterate from x1/y1 to x2/y2, using x0/y0 as the start point within the source buffer.
+	for (int y = y1; y <= y2; y++) {
+		for (int x = x1; x <= x2; x++) {
 			Character ch = buf.GetCharacter(x-x0, y-y0);
 			UnicodeChar code = ch.GetChar();
 			if (code > 0)
@@ -50,7 +79,7 @@ void TextBuffer::Clear(const unsigned int x0, const unsigned int y0, unsigned in
 		y1 = height;
 	for (unsigned int y = y0; y < y1; y++) {
 		for (unsigned int x = x0; x < x1; x++) {
-			Character ch('a');
+			Character ch(176);
 			SetCharacter(x, y, ch);
 		}
 	}
